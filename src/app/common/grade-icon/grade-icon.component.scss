@@ -1,0 +1,49 @@
+.grade-icon.text-muted {
+  background-color: #777;
+}
+.grade-icon.text-primary {
+  background-color: #337ab7;
+}
+.grade-icon.text-success {
+  background-color: #5cb85c;
+}
+.grade-icon.text-danger {
+  background-color: #d9534f;
+}
+.grade-icon.text-info {
+  background-color: #5bc0de;
+}
+.grade-icon.text-warning {
+  background-color: #f0ad4e;
+}
+a .grade-icon:hover {
+  background-color: #2b679c;
+}
+.grade-icon{
+  color: #fff;
+  font-size: 1em;
+  background-color: #333;
+  border-radius: 100%;
+  width: 2.25em;
+  height: 2.25em;
+  font-weight: 100;
+  font-size: 1em;
+  user-select: none;
+  cursor: default;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.grade-icon.colorful {
+  &.grade-0 { background-color: #E60000;  }
+  &.grade-1 { background-color: #F27A00;  }
+  &.grade-2 { background-color: #0073E6;  }
+  &.grade-3 { background-color: #6DDB00; }
+}
+.text-left .grade-icon {
+  margin-left: 0;
+}
+.text-right .grade-icon {
+  margin-right: 0;
+}
