@@ -225,6 +225,7 @@ import {TasksViewerComponent} from './units/states/tasks/tasks-viewer/tasks-view
 import {UnitCodeComponent} from './common/unit-code/unit-code.component';
 import {GradeService} from './common/services/grade.service';
 import {GradeIconComponent} from './common/grade-icon/grade-icon.component';
+import { PortfoliosComponent } from './units/states/portfolios/portfolios.component';
 
 @NgModule({
   // Components we declare
@@ -327,6 +328,7 @@ import {GradeIconComponent} from './common/grade-icon/grade-icon.component';
     FTaskBadgeComponent,
     FUnitsComponent,
     GradeIconComponent,
+    PortfoliosComponent,
   ],
   // Services we provide
   providers: [

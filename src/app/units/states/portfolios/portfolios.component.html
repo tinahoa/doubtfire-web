@@ -1,0 +1,200 @@
+<div id="student-portfolios" class="container">
+  <ng-container *ngIf="selectedStudent">
+    <mat-tab-group [(selectedIndex)]="activeTabIndex">
+      <mat-tab *ngFor="let tab of tabs | keyvalue | slice:0; let i = index" label="{{tab.value.title}}" [disabled]="!selectedStudent">
+        <ng-template mat-tab-label>
+          {{ tab.value.title }}
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </ng-container>
+
+  <mat-card *ngIf="activeTab === tabs.selectStudent">
+    <mat-toolbar color="primary">
+      <div class="mat-toolbar-row">
+        <span class="mat-title">Mark Portfolios</span>
+        <span class="mat-subheading">Assess student portfolios</span>
+        <span class="spacer"></span>
+        <div class="buttons">
+          <mat-button-toggle-group [(ngModel)]="portfolioFilter">
+            <mat-button-toggle value="allStudents" matTooltip="Show all students, even those without portfolios">
+              <mat-icon>public</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle value="withPortfolio" matTooltip="Show only students with portfolios">
+              <mat-icon>book</mat-icon>
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+
+          <mat-button-toggle-group [(ngModel)]="studentFilter">
+            <mat-button-toggle value="allStudents" matTooltip="Show all students">
+              <mat-icon>school</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle value="myStudents" matTooltip="Show only my students">
+              <mat-icon>edit</mat-icon>
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+
+          <mat-button-toggle-group [(ngModel)]="filterOptions.selectedGrade" class="select-portfolio-grade">
+            <mat-button-toggle value="-1" matTooltip="Show all portfolios">
+              <span [ngClass]="{'text-primary': filterOptions.selectedGrade === -1, 'text-muted': filterOptions.selectedGrade !== -1}">All</span>
+            </mat-button-toggle>
+
+            <ng-container *ngFor="let grade of gradeValues; let index = index">
+              <mat-button-toggle *ngIf="index !== 4"
+                                 [value]="index"
+                                 matTooltip="Select to show student's aiming for {{grades[grade]}}">
+                <grade-icon [grade]="grade"
+                            [ngClass]="{'text-primary': filterOptions.selectedGrade === index, 'text-muted': filterOptions.selectedGrade !== index}">
+                </grade-icon>
+              </mat-button-toggle>
+            </ng-container>
+
+          </mat-button-toggle-group>
+        </div>
+      </div>
+    </mat-toolbar>
+
+    <mat-card-content>
+      <mat-form-field>
+        <input matInput
+               placeholder="Search..."
+               [(ngModel)]="search"
+               autocomplete="off"
+               [matAutocomplete]="auto"
+               #searchInput>
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let text of unit.studentFilterTypeAheadData | filter:searchInput.value | limitTo:8"
+                      [value]="text">
+            {{ text }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <p *ngIf="filteredStudents.length < allStudents.length && filteredStudents.length !== 0">
+        Showing {{filteredStudents.length}} of {{unit.students.length}} students enrolled.
+      </p>
+
+      <div *ngIf="filteredStudents.length === 0" class="large-notice-block">
+        <mat-icon>book</mat-icon>
+        <p>No portfolios found</p>
+      </div>
+
+      <mat-table *ngIf="filteredStudents.length > 0" [dataSource]="filteredStudents" class="mat-elevation-z8">
+        <ng-container matColumnDef="studentId">
+          <mat-header-cell *matHeaderCellDef>
+            <a (click)="sortOrder = 'student.studentId'; reverse = !reverse">
+              Student
+              <mat-icon *ngIf="sortOrder === 'student.studentId'">{{ reverse ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            </a>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let student">{{student.student.studentId || student.student.username}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef>
+            <a (click)="sortOrder = 'name'; reverse = !reverse">
+              Name
+              <mat-icon *ngIf="sortOrder === 'name'">{{ reverse ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            </a>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let student">{{student.student.name}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="tutor">
+          <mat-header-cell *matHeaderCellDef>
+            <a (click)="sortOrder = 'tutorial.tutorName'; reverse = !reverse">
+              Tutor
+              <mat-icon *ngIf="sortOrder === 'tutorial.tutorName'">{{ reverse ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            </a>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let student">{{student.tutorNames()}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="tutorial">
+          <mat-header-cell *matHeaderCellDef>
+            <a (click)="sortOrder = 'tutorial.abbreviation'; reverse = !reverse">
+              Tutorial
+              <mat-icon *ngIf="sortOrder === 'tutorial.abbreviation'">{{ reverse ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            </a>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let student">{{student.shortTutorialDescription()}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="targetGrade">
+          <mat-header-cell *matHeaderCellDef>
+            <a (click)="sortOrder = 'targetGrade'; reverse = !reverse">
+              Target
+              <mat-icon *ngIf="sortOrder === 'targetGrade'">{{ reverse ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            </a>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let student">
+            <grade-icon [grade]="student.targetGrade"></grade-icon>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="submittedGrade">
+          <mat-header-cell *matHeaderCellDef>
+            <a (click)="sortOrder = 'submittedGrade'; reverse = !reverse">
+              Submitted as
+              <mat-icon *ngIf="sortOrder === 'submittedGrade'">{{ reverse ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            </a>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let student">
+            <grade-icon [grade]="student.submittedGrade"></grade-icon>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="stats">
+          <mat-header-cell *matHeaderCellDef>
+            <a (click)="sortOrder = 'orderScale'; reverse = !reverse">
+              Stats
+              <mat-icon *ngIf="sortOrder === 'orderScale'">{{ reverse ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            </a>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let student">
+            <mat-progress-bar mode="determinate" [value]="student.taskStats | filter:barLargerZero | sumOfValues"></mat-progress-bar>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="hasPortfolio" *ngIf="portfolioFilter === 'allStudents'">
+          <mat-header-cell *matHeaderCellDef>
+            <a (click)="sortOrder = 'hasPortfolio'; reverse = !reverse">
+              Portfolio?
+              <mat-icon *ngIf="sortOrder === 'hasPortfolio'">{{ reverse ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            </a>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let student">{{ student.hasPortfolio ? 'Yes' : 'No' }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="grade">
+          <mat-header-cell *matHeaderCellDef>
+            <a (click)="sortOrder = 'grade'; reverse = !reverse">
+              Grade
+              <mat-icon *ngIf="sortOrder === 'grade'">{{ reverse ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+            </a>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let student">{{ student.grade }}</mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"
+                 [ngClass]="{'mat-row-selected': selectedStudent === row}"
+                 (click)="selectStudent(row)">
+        </mat-row>
+      </mat-table>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <mat-paginator [length]="filteredStudents.length"
+                     [pageSize]="pageSize"
+                     [pageSizeOptions]="[5, 10, 20]"
+                     (page)="currentPage = $event.pageIndex + 1"
+                     class="mat-paginator-sm">
+      </mat-paginator>
+      <button mat-raised-button color="primary" (click)="downloadGrades()">
+        <mat-icon>download</mat-icon> Download Grades
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+</div>
