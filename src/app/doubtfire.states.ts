@@ -8,6 +8,10 @@ import {TeachingPeriodListComponent} from './admin/states/teaching-periods/teach
 import {AcceptEulaComponent} from './eula/accept-eula/accept-eula.component';
 import {FUsersComponent} from './admin/states/f-users/f-users.component';
 import {FUnitsComponent} from './admin/states/f-units/f-units.component';
+import { UnitService } from './api/services/unit.service';
+import { AppInjector } from './app-injector';
+import { firstValueFrom } from 'rxjs';
+import { TasksViewerComponent } from './units/states/tasks/tasks-viewer/tasks-viewer.component';
 
 /*
  * Use this file to store any states that are sourced by angular components.
@@ -290,7 +294,34 @@ const ViewAllUnits: NgHybridStateDeclaration = {
     roleWhitelist: ['Tutor', 'Convenor', 'Admin'],
   },
 };
-
+/**
+ * Define the task viewer state.
+ */
+const TaskViewerState: NgHybridStateDeclaration = {
+  name: 'units/tasks/viewer',
+  url: '/units/:unitId/tasks/viewer',
+  resolve: {
+    taskDefs: async function ($stateParams: {unitId: number}) {
+      const unitService = AppInjector.get(UnitService);
+      const unit = await firstValueFrom(unitService.get($stateParams.unitId));
+      return unit.taskDefinitions;
+    },
+    unit: async function ($stateParams: {unitId: number}) {
+      const unitService = AppInjector.get(UnitService);
+      return await firstValueFrom(unitService.get($stateParams.unitId));
+    },
+  },
+  views: {
+    main: {
+      component: TasksViewerComponent,
+    },
+  },
+  data: {
+    task: 'Task List',
+    pageTitle: '_Home_',
+    roleWhitelist: ['Tutor', 'Convenor', 'Admin', 'Auditor'],
+  },
+};
 /**
  * Export the list of states we have created in angular
  */
@@ -306,4 +337,5 @@ export const doubtfireStates = [
   ViewAllProjectsState,
   ViewAllUnits,
   AdministerUnits,
+  TaskViewerState,
 ];

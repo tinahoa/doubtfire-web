@@ -99,7 +99,6 @@ import 'build/src/app/units/units.js';
 import 'build/src/app/units/states/tasks/inbox/inbox.js';
 import 'build/src/app/units/states/tasks/tasks.js';
 import 'build/src/app/units/states/tasks/viewer/directives/directives.js';
-// import 'build/src/app/units/states/tasks/viewer/viewer.js';
 import 'build/src/app/units/states/tasks/definition/definition.js';
 import 'build/src/app/units/states/portfolios/portfolios.js';
 import 'build/src/app/units/states/groups/groups.js';
@@ -220,7 +219,6 @@ import {FUnitTaskListComponent} from './units/states/tasks/viewer/directives/f-u
 import {FTaskDetailsViewComponent} from './units/states/tasks/viewer/directives/f-task-details-view/f-task-details-view.component';
 import {FTaskSheetViewComponent} from './units/states/tasks/viewer/directives/f-task-sheet-view/f-task-sheet-view.component';
 import {TasksViewerComponent} from './units/states/tasks/tasks-viewer/tasks-viewer.component';
-import {ViewerComponent} from './units/states/tasks/viewer/viewer.component';
 
 import {FUnitsComponent} from './admin/states/f-units/f-units.component';
 import {MarkedPipe} from './common/pipes/marked.pipe';
@@ -430,12 +428,6 @@ DoubtfireAngularJSModule.directive(
   'taskDescriptionCard',
   downgradeComponent({component: TaskDescriptionCardComponent}),
 );
-DoubtfireAngularJSModule.directive(
-  'viewerComponent',
-  downgradeComponent({component: ViewerComponent}),
-);
-
-
 DoubtfireAngularJSModule.directive(
   'taskAssessmentComment',
   downgradeComponent({component: TaskAssessmentCommentComponent}),
